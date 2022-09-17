@@ -42,35 +42,15 @@ namespace GameServer.Services
 
         public static string[,] EvolveBoard(string[,] borad, string symbol, int x,int y)
         {
-            if (!IsLegalMove(borad, symbol, x, y))
-            {
-                throw new Exception($"This is not legal move x: {x} y: {y} player: {symbol}");
-            }
             borad[y, x] = symbol;
-            var endXY_1 = FindEndXY_1(borad, symbol, x, y);
-            if (IsLegalIndex(endXY_1.x, endXY_1.y))
+            foreach (var pieces in (new PiecesGenerator(borad, x, y)).GetAllPieces())
             {
-                PutX(borad, symbol, x, endXY_1.x, y);
+                var xy = FindPair(pieces, symbol);
+                if (IsLegalIndex(xy.x, xy.y))
+                {
+                    borad = PutPieces(borad, symbol, xy.x, xy.y, pieces);
+                }
             }
-            var endXY_2 = FindEndXY_2(borad, symbol, x, y);
-            if (IsLegalIndex(endXY_2.x, endXY_2.y))
-            {
-                PutX(borad, symbol, endXY_2.x, x, y);
-            }
-
-            var endUD_1 = FindEndUD_1(borad, symbol, y, x);
-            if (IsLegalIndex(endUD_1.x, endUD_1.y))
-            {
-                PutY(borad, symbol, y, endUD_1.y, x);
-            }
-            var endUD_2 = FindEndUD_2(borad, symbol, y, x);
-            if (IsLegalIndex(endUD_2.x, endUD_2.y))
-            {
-                PutY(borad, symbol, endUD_2.y, y, x);
-            }
-
-            //todo dyagonl
-            
             borad[8, 0] = FlipSymbol(symbol);
             if (IsGameEnd(borad))
             {
@@ -88,14 +68,15 @@ namespace GameServer.Services
             }
             string[,] borad = (string[,])_borad.Clone();
             borad[y, x] = symbol;
-            var endXY_1 = FindEndXY_1(borad, symbol, x, y);
-            var endXY_2 = FindEndXY_2(borad, symbol, x, y);
-            var endUD_1 = FindEndUD_1(borad, symbol, y, x);
-            var endUD_2 = FindEndUD_2(borad, symbol, y, x);
-            return IsLegalIndex(endXY_1.x, endXY_1.y)
-                || IsLegalIndex(endXY_2.x, endXY_2.y)
-                || IsLegalIndex(endUD_1.x, endUD_1.y)
-                || IsLegalIndex(endUD_2.x, endUD_2.y);
+            foreach (var pieces in (new PiecesGenerator(borad, x, y)).GetAllPieces())
+            {
+                var xy = FindPair(pieces, symbol);
+                if (IsLegalIndex(xy.x, xy.y))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static bool IsGameEnd(string[,] _borad)
@@ -115,29 +96,29 @@ namespace GameServer.Services
             return true;
         }
 
-        public static bool IsLegalIndex(int x, int y)
+        private static bool IsLegalIndex(int x, int y)
         {
             return x >= 0 && y >= 0 && x < 8 && y < 8;
         }
 
-        public static (int x, int y) FindEndXY_1(string[,] borad, string symbol, int startX, int y)
+        private static (int x, int y) FindPair(PieceEnum pieces, string symbol)
         {
             string enemy = FlipSymbol(symbol);
-            if (borad[y, startX] != symbol)
+            if (pieces.Current != symbol)
             {
                 return (-1, -1);
             }
-            for (int x = startX + 1; x < 8; x++)
+            while (pieces.IsLegalIndex && pieces.MoveNext())
             {
-                if (borad[y, x] == enemy)
+                if (pieces.Current == enemy)
                 {
                     continue;
                 }
-                else if (borad[y, x] == symbol)
+                else if (pieces.Current == symbol)
                 {
-                    return (x, y);
+                    return pieces.CurrentPosition;
                 }
-                else if (borad[y, x] == "_")
+                else if (pieces.Current == "_")
                 {
                     return (-1, -1);
                 }
@@ -145,82 +126,7 @@ namespace GameServer.Services
             return (-1, -1);
         }
 
-        public static (int x, int y) FindEndXY_2(string[,] borad, string symbol, int startX, int y)
-        {
-            string enemy = FlipSymbol(symbol);
-            if (borad[y, startX] != symbol)
-            {
-                return (-1, -1);
-            }
-            for (int x = startX - 1; x > -1; x--)
-            {
-                if (borad[y, x] == enemy)
-                {
-                    continue;
-                }
-                else if (borad[y, x] == symbol)
-                {
-                    return (x, y);
-                }
-                else if (borad[y, x] == "_")
-                {
-                    return (-1, -1);
-                }
-            }
-            return (-1, -1);
-        }
-
-        public static (int x, int y) FindEndUD_1(string[,] borad, string symbol, int startY, int x)
-        {
-            string enemy = FlipSymbol(symbol);
-            if (borad[startY, x] != symbol)
-            {
-                return (-1, -1);
-            }
-            for (int y = startY + 1; y < 8; y++)
-            {
-                if (borad[y, x] == enemy)
-                {
-                    continue;
-                }
-                else if (borad[y, x] == symbol)
-                {
-                    return (x, y);
-                }
-                else if (borad[y, x] == "_")
-                {
-                    return (-1, -1);
-                }
-            }
-            return (-1, -1);
-        }
-
-        public static (int x, int y) FindEndUD_2(string[,] borad, string symbol, int startY, int x)
-        {
-            string enemy = FlipSymbol(symbol);
-            if (borad[startY, x] != symbol)
-            {
-                return (-1, -1);
-            }
-            for (int y = startY - 1; y > -1; y--)
-            {
-                if (borad[y, x] == enemy)
-                {
-                    continue;
-                }
-                else if (borad[y, x] == symbol)
-                {
-                    return (x, y);
-                }
-                else if (borad[y, x] == "_")
-                {
-                    return (-1, -1);
-                }
-            }
-            return (-1, -1);
-        }
-
-        public static string FlipSymbol(string symbol)
+        private static string FlipSymbol(string symbol)
         {
             if (symbol == "w")
             {
@@ -236,46 +142,14 @@ namespace GameServer.Services
             }
         }
 
-        public static string[,] PutX(string[,] board, string symbol, int startX, int endX, int y)
+        private static string[,] PutPieces(string[,] board, string symbol, int endX, int endY, PieceEnum pieces)
         {
-            for (int x = startX; x < endX; x++)
+            pieces.Reset();
+            while (pieces.IsLegalIndex
+                && pieces.MoveNext()
+                && (pieces.CurrentPosition.x != endX || pieces.CurrentPosition.y != endY))
             {
-                board[y, x] = symbol;
-            }
-            return board;
-        }
-
-        public static string[,] PutY(string[,] board, string symbol, int startY, int endY, int x)
-        {
-            for (int y = startY; y < endY; y++)
-            {
-                board[y, x] = symbol;
-            }
-            return board;
-        }
-
-        public static string[,] PutRd(string[,] board, string symbol, int startX, int startY, int endX, int endY)
-        {
-            int x = startX;
-            int y = startY;
-            while (x < endX && y < endY)
-            {
-                board[x, y] = symbol;
-                x++;
-                y++;
-            }
-            return board;
-        }
-
-        public static string[,] PutLd(string[,] board, string symbol, int startX, int startY, int endX, int endY)
-        {
-            int x = startX;
-            int y = startY;
-            while (x > endX && y < endY)
-            {
-                board[x, y] = symbol;
-                x--;
-                y++;
+                board[pieces.CurrentPosition.y, pieces.CurrentPosition.x] = symbol;
             }
             return board;
         }
