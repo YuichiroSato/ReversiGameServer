@@ -22,7 +22,7 @@ namespace GameServer.Controllers
         [HttpGet()]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "value" };
+            return _gameEngineService.GetBoardList();
         }
 
         [HttpGet("{id}")]

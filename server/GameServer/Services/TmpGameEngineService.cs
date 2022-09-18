@@ -8,9 +8,14 @@ namespace GameServer.Services
     {
         private static string RootPath = "/tmp/reversi/";
 
-        public List<int> GetBoardList()
+        public List<string> GetBoardList()
         {
-            return new List<int>();
+            var ls = new List<string>();
+            foreach (string f in Directory.GetFiles(RootPath))
+            {
+                ls.Add(Path.GetFileName(f));
+            }
+            return ls;
         }
 
         public string[,] GetBoard(int i)

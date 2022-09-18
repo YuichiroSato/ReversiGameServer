@@ -14,6 +14,17 @@ namespace Service.Tests
         }
 
         [Test]
+        public void GetBoardListTest()
+        {
+            _service.GetBoard(1);
+            _service.GetBoard(2);
+            var result = _service.GetBoardList();
+            Assert.That(result.Count(), Is.EqualTo(2));
+            Assert.That(result.ElementAt(0), Is.EqualTo("1"));
+            Assert.That(result.ElementAt(1), Is.EqualTo("2"));
+        }
+
+        [Test]
         public void InitBoardTest()
         {
             _service.RemoveBoard(1);
