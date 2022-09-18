@@ -32,26 +32,165 @@ namespace Service.Tests
         }
 
         [Test]
-        public void EvolveBoardTest()
+        public void EvolveBoardTest1()
         {
             string[,] borad = GameEngine.GetInitialBoard();
             Assert.That(borad[3, 3], Is.EqualTo("w"));
-            GameEngine.PrintBoard(borad);
             GameEngine.EvolveBoard(borad, "b", 2, 3);
-            GameEngine.PrintBoard(borad);
             Assert.That(borad[3, 3], Is.EqualTo("b"));
+            GameEngine.EvolveBoard(borad, "w", 2, 2);
+            Assert.That(borad[3, 3], Is.EqualTo("w"));
+            GameEngine.EvolveBoard(borad, "b", 3, 2);
+            Assert.That(borad[3, 3], Is.EqualTo("b"));
+            GameEngine.EvolveBoard(borad, "w", 2, 4);
+            Assert.That(borad[3, 2], Is.EqualTo("w"));
+            Assert.That(borad[4, 3], Is.EqualTo("w"));
+        }
+
+       [Test]
+        public void EvolveBoardTest2()
+        {
+            string[,] borad = new string[,]
+            {
+                { "b", "_", "b", "_", "_", "_", "_", "_" },
+                { "_", "w", "w", "_", "_", "_", "_", "_" },
+                { "b", "w", "_", "w", "w", "b", "w", "w" },
+                { "_", "w", "w", "w", "b", "_", "_", "_" },
+                { "b", "_", "w", "b", "w", "_", "_", "_" },
+                { "_", "_", "b", "_", "_", "w", "_", "_" },
+                { "_", "_", "_", "_", "_", "_", "b", "_" },
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "b", null, null, null, null, null, null, null }
+            };
+            string[,] expected = new string[,]
+            {
+                { "b", "_", "b", "_", "_", "_", "_", "_" },
+                { "_", "b", "b", "_", "_", "_", "_", "_" },
+                { "b", "b", "b", "b", "b", "b", "w", "w" },
+                { "_", "b", "b", "b", "b", "_", "_", "_" },
+                { "b", "_", "b", "b", "b", "_", "_", "_" },
+                { "_", "_", "b", "_", "_", "b", "_", "_" },
+                { "_", "_", "_", "_", "_", "_", "b", "_" },
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "_", null, null, null, null, null, null, null }
+            };
+            var result = GameEngine.EvolveBoard(borad, "b", 2, 2);
+            Assert.That(result, Is.EqualTo(expected));
         }
 
         [Test]
-        public void IsGameEndTest()
+        public void EvolveBoardTest3()
+        {
+            string[,] borad = new string[,]
+            {
+                { "b", "_", "b", "_", "_", "_", "_", "_" },
+                { "_", "w", "w", "_", "_", "_", "_", "_" },
+                { "b", "w", "_", "w", "w", "b", "w", "w" },
+                { "_", "w", "w", "w", "b", "_", "_", "_" },
+                { "b", "_", "w", "b", "w", "_", "_", "_" },
+                { "_", "_", "b", "_", "_", "w", "_", "_" },
+                { "_", "_", "_", "_", "_", "_", "b", "_" },
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "w", null, null, null, null, null, null, null }
+            };
+            string[,] expected = new string[,]
+            {
+                { "b", "_", "b", "_", "_", "_", "_", "_" },
+                { "_", "w", "w", "_", "_", "_", "_", "_" },
+                { "b", "w", "w", "w", "w", "b", "w", "w" },
+                { "_", "w", "w", "w", "b", "_", "_", "_" },
+                { "b", "_", "w", "b", "w", "_", "_", "_" },
+                { "_", "_", "b", "_", "_", "w", "_", "_" },
+                { "_", "_", "_", "_", "_", "_", "b", "_" },
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "b", null, null, null, null, null, null, null }
+            };
+            var result = GameEngine.EvolveBoard(borad, "w", 2, 2);
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void IsGameEndTest1()
         {
             string[,] borad = GameEngine.GetInitialBoard();
-            Assert.That(GameEngine.IsGameEnd(borad), Is.EqualTo(false));
+            Assert.False(GameEngine.IsGameEnd(borad));
             borad[3, 3] = "_";
             borad[4, 3] = "_";
             borad[3, 4] = "_";
             borad[4, 4] = "_";
-            Assert.That(GameEngine.IsGameEnd(borad), Is.EqualTo(true));
+            Assert.True(GameEngine.IsGameEnd(borad));
+        }
+
+        [Test]
+        public void IsGameEndTest2()
+        {
+            string[,] borad = new string[,]
+            {
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "_", "_", "_", "w", "w", "_", "_", "_" },
+                { "_", "_", "_", "w", "w", "_", "_", "_" },
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "w", null, null, null, null, null, null, null }
+            };
+            Assert.True(GameEngine.IsGameEnd(borad));
+        }
+
+        [Test]
+        public void IsLegalMoveTest()
+        {
+            string[,] borad = new string[,]
+            {
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "_", "b", "w", "w", "_", "_", "b", "_" },
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "_", "_", "_", "_", "_", "_", "_", "_" },
+                { "_", "_", "_", "_", "w", "_", "_", "_" },
+                { "_", "_", "_", "w", "_", "_", "w", "_" },
+                { "_", "_", "b", "_", "_", "_", "w", "_" },
+                { "_", "_", "_", "_", "_", "_", "b", "_" },
+                { "b", null, null, null, null, null, null, null }
+            };
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 0, 0));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 1, 0));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 2, 0));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 3, 0));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 4, 0));
+            Assert.True(GameEngine.IsLegalMove(borad, "b", 4, 1));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 4, 2));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 3, 2));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 2, 2));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 1, 2));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 0, 2));
+
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 5, 0));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 6, 0));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 7, 0));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 7, 1));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 7, 2));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 6, 2));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 5, 2));
+
+            Assert.True(GameEngine.IsLegalMove(borad, "b", 5, 3));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 5, 4));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 4, 5));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 3, 6));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 4, 3));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 3, 4));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 2, 5));
+
+            Assert.True(GameEngine.IsLegalMove(borad, "b", 6, 4));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 7, 4));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 7, 5));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 7, 6));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 7, 7));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 5, 7));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 5, 6));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 5, 5));
+            Assert.False(GameEngine.IsLegalMove(borad, "b", 5, 4));
         }
     }
 }
