@@ -26,16 +26,25 @@ namespace GameServer.Controllers
         }
 
         [HttpGet("{id}")]
-        //public ActionResult<string[,]> Get(int id)
         public ActionResult<string> Get(int id)
         {
             if (!_gameEngineService.IsExists(id))
             {
                 _gameEngineService.InitBoard(id);
             }
-            var borad = _gameEngineService.GetBoard(id);
-            //return borad;
-            return "ok";
+            var board = _gameEngineService.GetBoard(id);
+            var str = "";
+            for (int y= 0; y < 8; y++)
+            {
+                var line = "";
+                for (int x = 0; x < 7; x++)
+                {
+                    line += board[y, x] + ","; 
+                }
+                str += line + board[y, 7] + "\n";
+            }
+            str += board[8, 0] + "\n";
+            return str;
         }
 
         [HttpPost("{id}")]
