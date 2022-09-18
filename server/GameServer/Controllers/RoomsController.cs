@@ -48,25 +48,39 @@ namespace GameServer.Controllers
         }
 
         [HttpPost("{id}")]
-        public string Post(int id)
+        public IActionResult Post(int id)
         {
             using (var reader = new StreamReader(Request.Body))
             {
                 string plainText = reader.ReadToEnd();
                 string[] move = plainText.Split(null);
-                string symbol = move[0];
-                int x = Int32.Parse(move[1]);
-                int y = Int32.Parse(move[2]);
-                 _gameEngineService.PlayMove(id, symbol, x, y);
+                try
+                {
+                    string symbol = move[0];
+                    int x = Int32.Parse(move[1]);
+                    int y = Int32.Parse(move[2]);
+                    if (_gameEngineService.IsLegalMove(id, symbol, x, y))
+                    {
+                        _gameEngineService.PlayMove(id, symbol, x, y);
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+                catch
+                {
+                    return BadRequest();
+                }
             }
-            return "ok";
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public string Delete(int id)
+        public IActionResult Delete(int id)
         {
             _gameEngineService.RemoveBoard(id);
-            return "ok";
+            return Ok();
         }
     }
 }

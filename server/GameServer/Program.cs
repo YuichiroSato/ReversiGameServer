@@ -9,6 +9,10 @@ builder.Services.AddSingleton<IGameEngineService, TmpGameEngineService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.AllowSynchronousIO = true;
+});
 
 var app = builder.Build();
 
