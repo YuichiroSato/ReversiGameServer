@@ -66,6 +66,10 @@ namespace GameServer.Services
             {
                 return false;
             }
+            if (_borad[y, x] != "_")
+            {
+                return false;
+            }
             string[,] borad = (string[,])_borad.Clone();
             borad[y, x] = symbol;
             foreach (var pieces in (new PiecesGenerator(borad, x, y)).GetAllPieces())
