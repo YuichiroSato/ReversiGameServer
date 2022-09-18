@@ -108,14 +108,20 @@ namespace GameServer.Services
             {
                 return (-1, -1);
             }
+            var c = 0;
             while (pieces.IsLegalIndex && pieces.MoveNext())
             {
                 if (pieces.Current == enemy)
                 {
+                    c++;
                     continue;
                 }
                 else if (pieces.Current == symbol)
                 {
+                    if (c < 1)
+                    {
+                        return (-1, -1);
+                    }
                     return pieces.CurrentPosition;
                 }
                 else if (pieces.Current == "_")
