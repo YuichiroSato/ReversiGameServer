@@ -1,0 +1,4 @@
+tmux new -s app
+cd ~/RevesiGameServer/server/GameServer
+dotnet run
+C-b d
