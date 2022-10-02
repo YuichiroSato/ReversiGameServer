@@ -1,0 +1,3 @@
+curl https://gkqfsnih.com/api/rooms/2
+curl -X POST http://gkqfsnih.com/api/rooms/2 -H 'Content-Type: text/plain' -d 'b 3 2'
+curl -X DELETE https://gkqfsnih.com/api/rooms/2
