@@ -1,0 +1,38 @@
+<html>
+<head>
+    <title>WebSocket Test</title>
+    <script type="text/javascript">
+        var uri = "ws://localhost:5142/api/ws/connect";
+        var webSocket = null;
+        var canvas = null;
+        var context = null;
+
+        function connect() {
+            webSocket = new WebSocket(uri);
+            webSocket.onmessage = onMessage;
+            webSocket.onerrer = onError;
+        }
+
+        function onMessage(event) {
+            if (event && event.data) {
+                console.log("on message");
+                console.log(event);
+                console.log(event.data);
+            }
+        }
+
+       function onError(event) {
+            if (event && event.data) {
+                console.log("on error");
+                console.log(event);
+                console.log(event.data);
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <h1>WebSocket Test</h1>
+    <input type="button" value="connect" onclick="connect()" />
+</body>
+</html>
