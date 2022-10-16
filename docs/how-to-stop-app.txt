@@ -1,0 +1,3 @@
+tmux attach-session -t app
+C-c
+C-d
