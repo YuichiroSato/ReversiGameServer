@@ -4,8 +4,6 @@
     <script type="text/javascript">
         var uri = "ws://localhost:5142/api/ws/connect";
         var webSocket = null;
-        var canvas = null;
-        var context = null;
 
         function connect() {
             webSocket = new WebSocket(uri);
@@ -28,11 +26,21 @@
                 console.log(event.data);
             }
         }
+
+        function send() {
+            webSocket.send(document.getElementById('message').value);
+        }
     </script>
 </head>
 
 <body>
     <h1>WebSocket Test</h1>
-    <input type="button" value="connect" onclick="connect()" />
+    <p>
+        <input type="button" value="connect" onclick="connect()" />
+    </p>
+    <p>
+        <input type="text" id="message" />
+        <input type="button" value="send" onClick="send()" />
+    </p>
 </body>
 </html>
