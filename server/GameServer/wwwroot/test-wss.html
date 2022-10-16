@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>WebSocket Test</title>
+    <script type="text/javascript">
+        var uri = "wss://gkqfsnih.com/api/ws/connect";
+        var webSocket = null;
+
+        function connect() {
+            webSocket = new WebSocket(uri);
+            webSocket.onmessage = onMessage;
+            webSocket.onerrer = onError;
+        }
+
+        function onMessage(event) {
+            if (event && event.data) {
+                console.log("on message");
+                console.log(event);
+                console.log(event.data);
+            }
+        }
+
+       function onError(event) {
+            if (event && event.data) {
+                console.log("on error");
+                console.log(event);
+                console.log(event.data);
+            }
+        }
+
+        function send() {
+            webSocket.send(document.getElementById('message').value);
+        }
+    </script>
+</head>
+
+<body>
+    <h1>WebSocket Test</h1>
+    <p>
+        <input type="button" value="connect" onclick="connect()" />
+    </p>
+    <p>
+        <input type="text" id="message" />
+        <input type="button" value="send" onClick="send()" />
+    </p>
+</body>
+</html>
