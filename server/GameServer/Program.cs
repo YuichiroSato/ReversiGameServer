@@ -30,6 +30,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+if (!Directory.Exists("/tmp/reversi"))
+{
+    Directory.CreateDirectory("/tmp/reversi");
+}
+
+if (!Directory.Exists("/tmp/reversi/state"))
+{
+    Directory.CreateDirectory("/tmp/reversi/state");
+}
+
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
 

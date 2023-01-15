@@ -9,6 +9,22 @@
             webSocket = new WebSocket(uri);
             webSocket.onmessage = onMessage;
             webSocket.onerrer = onError;
+            webSocket.onclose = onClose;
+        }
+
+        function reload() {
+            message = { "command": "reload" }
+            webSocket.send(JSON.stringify(message));
+        }
+
+        function close() {
+            webSocket.close();
+        }
+
+        function login() {
+            const loginName = document.getElementById('login-name');
+            message = { "command": "login", "loginName": loginName.value };
+            webSocket.send(JSON.stringify(message));
         }
 
         function onMessage(event) {
@@ -16,6 +32,12 @@
                 console.log("on message");
                 console.log(event);
                 console.log(event.data);
+                var message = "" + event.data;
+                if (message.substring(0, 3) == "log"){
+                    document.getElementById("player-symbol").innerText = message.substring(9, 10);
+                } else {
+                    document.getElementById("board").innerText = message;
+                }
             }
         }
 
@@ -27,8 +49,16 @@
             }
         }
 
-        function send() {
-            webSocket.send(document.getElementById('message').value);
+        function onClose(event) {
+            console.log(event);
+        }
+
+        function move() {
+            const symbol = document.getElementById('player-symbol').innerText;
+            const x = document.getElementById('x').value;
+            const y = document.getElementById('y').value;
+            message = { "command": "move", "symbol": symbol, "x": x, "y": y }
+            webSocket.send(JSON.stringify(message));
         }
     </script>
 </head>
@@ -37,10 +67,46 @@
     <h1>WebSocket Test</h1>
     <p>
         <input type="button" value="connect" onclick="connect()" />
+        <input type="button" value="reload" onclick="reload()" />
+        <input type="button" value="close" onclick="close()" />
     </p>
     <p>
-        <input type="text" id="message" />
-        <input type="button" value="send" onClick="send()" />
+        <input type="button" value="login" onclick="login()" />
+        Name:
+        <input type="text" id="login-name" />
     </p>
+    <p>
+        <div id="board"></div>
+    </p>
+    <p>
+        <input type="button" value="move" onClick="move()" />
+        x:
+        <select id="x">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+        </select>
+        y:
+        <select id="y">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+        </select>
+        you are: <span id="player-symbol">_</span>
+    </p>
+    <p>
+
+    </p>
+
 </body>
 </html>

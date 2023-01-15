@@ -7,6 +7,7 @@ namespace GameServer.Services
     public class TmpGameEngineService : IGameEngineService
     {
         private static string RootPath = "/tmp/reversi/";
+        private static string StateRootPath = "/tmp/reversi/state/";
 
         public List<string> GetBoardList()
         {
@@ -22,7 +23,20 @@ namespace GameServer.Services
         {
             return ReadBoardFile(i);
         }
-        
+
+        public GameState GetGameState(int id)
+        {
+            GameState state;
+            string[] line = System.IO.File.ReadAllLines(StateRootPath + id);
+            Enum.TryParse(line[0], out state);
+            return state;
+        }
+
+        public void SetGameState(int id, GameState state)
+        {
+            WriteStateFile(id, state);
+        }
+
         public bool InitBoard(int i)
         {
             if (!IsFileExists(i))
@@ -30,7 +44,9 @@ namespace GameServer.Services
                 try
                 {
                     CreateBoardFile(i);
+                    CreateStateFile(i);
                     WriteBoardFile(i, GameEngine.GetInitialBoard());
+                    WriteStateFile(i, GameState.Matching);
                 }
                 catch (Exception e)
                 {
@@ -58,6 +74,7 @@ namespace GameServer.Services
             try
             {
                 RemoveBoardFile(i);
+                RemoveStateFile(i);
             }
             catch (Exception e)
             {
@@ -106,9 +123,22 @@ namespace GameServer.Services
             }
         }
 
+        private void CreateStateFile(int i)
+        {
+            using (System.IO.FileStream fs = System.IO.File.Create(StateRootPath + i))
+            {
+                ;
+            }
+        }
+
         private void RemoveBoardFile(int i)
         {
             System.IO.File.Delete(RootPath + i);
+        }
+
+        private void RemoveStateFile(int i)
+        {
+            System.IO.File.Delete(StateRootPath + i);
         }
 
         private void CreateRootDirectory()
@@ -152,6 +182,12 @@ namespace GameServer.Services
                 strList[i] = str;
             }
             System.IO.File.WriteAllLines(RootPath + id, strList);
+        }
+
+        private void WriteStateFile(int id, GameState state)
+        {
+            var strList = new string[] { state.ToString() };
+            System.IO.File.WriteAllLines(StateRootPath + id, strList);
         }
     }
 }
