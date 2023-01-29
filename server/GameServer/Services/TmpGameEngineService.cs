@@ -16,6 +16,7 @@ namespace GameServer.Services
             {
                 ls.Add(Path.GetFileName(f));
             }
+            ls.Sort();
             return ls;
         }
 
