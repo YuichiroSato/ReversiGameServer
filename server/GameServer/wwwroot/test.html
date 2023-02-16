@@ -2,11 +2,12 @@
 <head>
     <title>WebSocket Test</title>
     <script type="text/javascript">
-        var uri = "ws://localhost:5142/api/ws/connect";
+        var uri = "ws://localhost:5142/api/ws/connect/dev/";
         var webSocket = null;
 
         function connect() {
-            webSocket = new WebSocket(uri);
+            const roomNo = document.getElementById('room-no').value;
+            webSocket = new WebSocket(uri + roomNo);
             webSocket.onmessage = onMessage;
             webSocket.onerrer = onError;
             webSocket.onclose = onClose;
@@ -67,6 +68,7 @@
     <h1>WebSocket Test</h1>
     <p>
         <input type="button" value="connect" onclick="connect()" />
+        <input type="text" id="room-no" />
         <input type="button" value="reload" onclick="reload()" />
         <input type="button" value="close" onclick="close()" />
     </p>
