@@ -25,7 +25,7 @@ namespace Service.Tests
         {
             var bytes = new byte[1024 * 4];
             bytes = EncodeBytes("{ \"command\": \"login\", \"loginName\": \"aaa\" }");
-            var input = _MessageService.parse(bytes);
+            var input = _MessageService.Deserialize(bytes);
             var channel = new CommunicationChannel();
             channel.RoomNo = 1;
             
@@ -36,7 +36,7 @@ namespace Service.Tests
 
             bytes = new byte[1024 * 4];
             bytes = EncodeBytes("{ \"command\": \"login\", \"loginName\": \"bbb\" }");
-            input = _MessageService.parse(bytes);
+            input = _MessageService.Deserialize(bytes);
 
             var result2 = _CommandService.Login(input, channel);
             Assert.That(result2.gameMessage.command, Is.EqualTo("login"));
@@ -45,7 +45,7 @@ namespace Service.Tests
 
             bytes = new byte[1024 * 4];
             bytes = EncodeBytes("{ \"command\": \"login\", \"loginName\": \"ccc\" }");
-            input = _MessageService.parse(bytes);
+            input = _MessageService.Deserialize(bytes);
 
             var result3 = _CommandService.Login(input, channel);
             Assert.That(result3.gameMessage.command, Is.EqualTo("login"));
@@ -58,7 +58,7 @@ namespace Service.Tests
         {
             var bytes = new byte[1024 * 4];
             bytes = EncodeBytes("{ \"command\": \"reload\" }");
-            var input = _MessageService.parse(bytes);
+            var input = _MessageService.Deserialize(bytes);
             var channel = new CommunicationChannel();
             channel.RoomNo = 2;
             _GameEngineService.InitBoard(2);
@@ -77,7 +77,7 @@ namespace Service.Tests
         {
             var bytes = new byte[1024 * 4];
             bytes = EncodeBytes("{ \"command\": \"move\", \"symbol\": \"b\", \"x\": \"3\", \"y\": \"2\" }");
-            var input = _MessageService.parse(bytes);
+            var input = _MessageService.Deserialize(bytes);
             var channel = new CommunicationChannel();
             channel.RoomNo = 3;
             _GameEngineService.InitBoard(3);
