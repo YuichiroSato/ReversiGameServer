@@ -7,12 +7,12 @@ namespace GameServer.Services
 {
     public class ProdMessageService : IMessageService
     {
-        public GameMessage  parse(byte[] message)
+        public GameMessage Deserialize(byte[] message)
         {
             return null;
         }
 
-        public byte[] encode(ReplyMessage reply)
+        public byte[] Serialize(ReplyMessage reply)
         {
             return new byte[]{};
         }

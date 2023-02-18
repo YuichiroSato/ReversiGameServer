@@ -21,7 +21,6 @@ namespace GameServer.Services
                 _gameEngineService.InitBoard(roomNo);
                 _gameEngineService.SetGameState(roomNo, GameState.Matching);
                 channel.PlayerNo = 1;
-                text = "login-as:b";
             }
             else
             {
@@ -30,37 +29,27 @@ namespace GameServer.Services
                 {
                     channel.PlayerNo = 2;
                     _gameEngineService.SetGameState(roomNo, GameState.Bplaying);
-                    text = "login-as:w";
+                }
+                else
+                {
+                    channel.PlayerNo = 3;
                 }
             }
             var reply = new ReplyMessage();
-            reply.buffer = System.Text.Encoding.UTF8.GetBytes(text);
+            reply.gameMessage = message;
+            reply.board = ReplyMessage.toList(_gameEngineService.GetBoard(channel.RoomNo ?? -1));
+            reply.playerNo = channel.PlayerNo;
             return reply;
         }
 
         public ReplyMessage Reload(GameMessage message, CommunicationChannel channel)
         {
             var reply = new ReplyMessage();
-            var str = boardString(channel.RoomNo ?? -1);
-            reply.buffer = System.Text.Encoding.UTF8.GetBytes(str);
+            reply.board =  ReplyMessage.toList(_gameEngineService.GetBoard(channel.RoomNo ?? -1));
+            reply.gameMessage = message;
             return reply;
         }
-        private String boardString(int id)
-        {
-            var board = _gameEngineService.GetBoard(id);
-            var str = "";
-            for (int y = 0; y < 8; y++)
-            {
-                var line = "";
-                for (int x = 0; x < 7; x++)
-                {
-                    line += board[y, x] + ","; 
-                }
-                str += line + board[y, 7] + "\n";
-            }
-            str += board[8, 0] + "\n";
-            return str;
-        }
+
         public ReplyMessage Move(GameMessage message, CommunicationChannel channel)
         {
             var roomNo = channel.RoomNo ?? -1;
@@ -81,9 +70,9 @@ namespace GameServer.Services
                 {
                     _gameEngineService.SetGameState(roomNo, GameState.Bpushing);
                 }
-                var str = boardString(roomNo);
-                reply.buffer = System.Text.Encoding.UTF8.GetBytes(str);
             }
+            reply.gameMessage = message;
+            reply.board = ReplyMessage.toList(_gameEngineService.GetBoard(channel.RoomNo ?? -1));
             return reply;
         }
 
@@ -96,15 +85,16 @@ namespace GameServer.Services
             {
                 var state = _gameEngineService.GetGameState(roomNo);
                 if (playerNo == 1 && state == GameState.Bpushing
-                    || playerNo == 2 && state == GameState.Wpushing)
+                    || playerNo == 2 && state == GameState.Wpushing
+                    || playerNo == 3 && state == GameState.Bpushing
+                    || playerNo == 3 && state == GameState.Wpushing)
                 {
-                    var str = boardString(roomNo);
-                    reply.buffer = System.Text.Encoding.UTF8.GetBytes(str);
-                    if (state == GameState.Bpushing)
+                    reply.board = ReplyMessage.toList(_gameEngineService.GetBoard(channel.RoomNo ?? -1));
+                    if (state == GameState.Bpushing && playerNo == 1)
                     {
                         _gameEngineService.SetGameState(roomNo, GameState.Wplayng);
                     }
-                    else if (state == GameState.Wpushing)
+                    else if (state == GameState.Wpushing && playerNo == 2)
                     {
                         _gameEngineService.SetGameState(roomNo, GameState.Bplaying);
                     }

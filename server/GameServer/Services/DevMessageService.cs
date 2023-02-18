@@ -7,27 +7,22 @@ namespace GameServer.Services
 {
     public class DevMessageService : IMessageService
     {
-        public GameMessage parse(byte[] message)
+        public GameMessage Deserialize(byte[] message)
         {
-            var jsonString = System.Text.Encoding.UTF8.GetString(trimByte(message));
+            var jsonString = System.Text.Encoding.UTF8.GetString(TrimByte(message));
             return JsonSerializer.Deserialize<GameMessage>(jsonString);
         }
 
-        public byte[] encode(ReplyMessage reply)
+        public byte[] Serialize(ReplyMessage reply)
         {
-            return null;
+            var str = JsonSerializer.Serialize(reply);
+            return System.Text.Encoding.UTF8.GetBytes(str);
         }
 
-        public GameMessage deserialize(byte[] message)
-        {
-            var jsonString = System.Text.Encoding.UTF8.GetString(trimByte(message));
-            return JsonSerializer.Deserialize<GameMessage>(jsonString);
-        }
-
-        private byte[] trimByte(byte[] message)
+        private byte[] TrimByte(byte[] message)
         {
             var c = 0;
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < message.Length; i++)
             {
                 if (message[i] != 0x00)
                 {

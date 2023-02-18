@@ -6,8 +6,8 @@ namespace GameServer.Services
 {
     public interface IMessageService
     {
-        GameMessage parse(byte[] message);
-        byte[] encode(ReplyMessage reply);
+        GameMessage Deserialize(byte[] message);
+        byte[] Serialize(ReplyMessage reply);
     }
 
     public class GameMessage

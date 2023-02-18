@@ -61,7 +61,7 @@ namespace GameServer.Controllers
                             var receiveResult = await webSocket.ReceiveAsync(
                                 new ArraySegment<byte>(buffer),
                                 CancellationToken.None);
-                            var message = messageService.parse(buffer);
+                            var message = messageService.Deserialize(buffer);
                             var reply = new ReplyMessage();
                             switch(message.command)
                             {
@@ -75,14 +75,12 @@ namespace GameServer.Controllers
                                     reply = _CommandService.Move(message, channel);
                                 break;
                             }
-                            if (reply.buffer != null)
-                            {
-                                await webSocket.SendAsync(
-                                    new ArraySegment<byte>(reply.buffer, 0, reply.buffer.Length),
-                                    WebSocketMessageType.Text,
-                                    true,
-                                    CancellationToken.None);
-                            }
+                            buffer = messageService.Serialize(reply);
+                            await webSocket.SendAsync(
+                                new ArraySegment<byte>(buffer, 0, buffer.Length),
+                                WebSocketMessageType.Text,
+                                true,
+                                CancellationToken.None);
                         }
                     }
                     else
@@ -104,12 +102,20 @@ namespace GameServer.Controllers
                 while(webSocket.State == WebSocketState.Connecting
                     || webSocket.State == WebSocketState.Open)
                 {
-                    Thread.Sleep(1000);
-                    var reply = _CommandService.Push(channel);
-                    if (reply.buffer != null)
+                    if (channel.PlayerNo == 3)
                     {
+                        Thread.Sleep(200);
+                    }
+                    else
+                    {
+                        Thread.Sleep(1000);
+                    }
+                    var reply = _CommandService.Push(channel);
+                    if (reply.board != null)
+                    {
+                        var buffer = messageService.Serialize(reply);
                         await webSocket.SendAsync(
-                            new ArraySegment<byte>(reply.buffer, 0, reply.buffer.Length),
+                            new ArraySegment<byte>(buffer, 0, buffer.Length),
                             WebSocketMessageType.Text,
                             true,
                             CancellationToken.None);
